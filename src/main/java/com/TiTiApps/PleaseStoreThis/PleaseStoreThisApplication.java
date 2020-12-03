@@ -22,16 +22,19 @@ public class PleaseStoreThisApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PleaseStoreThisApplication.class, args);
 
-        String filePath = "../src/main/resources/excel_file/EmployeeData.xlsx";
+        String excelFileName = "EmployeeData.xlsx";
+        String filePath = "src/main/resources/excel_file/" + excelFileName;
+        String sheetName = "";
+        
 
 		try {
 
             FileInputStream excelFile = new FileInputStream(new File(filePath));
             Workbook workbook = new XSSFWorkbook(excelFile);
             Sheet datatypeSheet = workbook.getSheetAt(0);
-			Iterator<Row> iterator = datatypeSheet.iterator();
+            Iterator<Row> iterator = datatypeSheet.iterator();
 			
-			System.out.println();
+			sheetName = workbook.getSheetName(0);
 
             while (iterator.hasNext()) {
 
@@ -53,35 +56,28 @@ public class PleaseStoreThisApplication {
                 System.out.println();
             }
 
+            workbook.close();
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        try {
-            Class.forName("org.hsqldb.jdbc.JDBCDriver" );
-        } catch (Exception e) {
-            System.err.println("ERROR: failed to load HSQLDB JDBC driver.");
-            e.printStackTrace();
-            return;
-        }
-       
-        Connection con = null;
-      
-        try {
-            //Registering the HSQLDB JDBC driver
-            Class.forName("org.hsqldb.jdbc.JDBCDriver");
-            //Creating the connection with HSQLDB
-            con = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/excel-tables-db", "SA", "");
-            
-            if (con!= null){
-                System.out.println("Connection created successfully");
-                
-            }else{
-                System.out.println("Problem with creating connection");
-            }
         
+        Connection con = null;
+        Statement stmt = null;
+        
+        
+        try {
+            Class.forName("org.hsqldb.jdbc.JDBCDriver");
+            con = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/excel-tables-db", "SA", "");
+            stmt = con.createStatement();
+            
+            stmt.executeUpdate("CREATE TABLE " + sheetName + " (id INT NOT NULL, title VARCHAR(50) NOT NULL, author VARCHAR(20) NOT NULL, submission_date DATE, PRIMARY KEY (id));");
+            
+            System.out.println("Table " + sheetName + " created successfully");
+
         }  catch (Exception e) {
             e.printStackTrace(System.out);
         }

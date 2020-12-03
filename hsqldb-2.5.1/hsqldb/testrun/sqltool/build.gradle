@@ -1,6 +1,6 @@
 defaultTasks 'runTests'
 
-task runTests << {
+task runTests doLast {
     def params = ['NO_JVM_EXIT']
     boolean verbose =
             project.hasProperty('verbose') && project.property('verbose')
