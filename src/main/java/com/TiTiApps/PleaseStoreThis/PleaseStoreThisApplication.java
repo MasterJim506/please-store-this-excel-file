@@ -9,7 +9,8 @@ public class PleaseStoreThisApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PleaseStoreThisApplication.class, args);
 
-		System.out.println("\n\n********************\nyo yo\n");
+		System.out.println("\n\n********************\nyo yo");
+		System.out.println("\n********************\nméga muscles!\n");
 	}
 
 }
