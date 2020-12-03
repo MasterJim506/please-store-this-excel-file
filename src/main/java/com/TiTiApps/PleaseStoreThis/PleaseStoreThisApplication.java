@@ -22,7 +22,7 @@ public class PleaseStoreThisApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PleaseStoreThisApplication.class, args);
 
-		String filePath = "EmployeeData.xlsx";
+        String filePath = "../src/main/resources/excel_file/EmployeeData.xlsx";
 
 		try {
 
