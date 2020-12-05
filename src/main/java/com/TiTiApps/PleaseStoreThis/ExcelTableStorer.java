@@ -11,7 +11,7 @@ public class ExcelTableStorer {
 
     }
 
-    public void storeExcelTable(ExcelFileObjects excelFileObjects){
+    public void storeExcelTable(ExcelTableRows excelTableRows){
         Connection con = null;
         Statement stmt = null;    
         
@@ -22,8 +22,8 @@ public class ExcelTableStorer {
             
             try {
             
-                stmt.executeUpdate("CREATE TABLE " + excelFileObjects.getSheetName() + " (id INT NOT NULL, employeenumber INT NOT NULL, firstname VARCHAR(50) NOT NULL, lastname VARCHAR(50) NOT NULL, PRIMARY KEY (id));");
-                System.out.println("Table " + excelFileObjects.getSheetName() + " created successfully");
+                stmt.executeUpdate("CREATE TABLE " + excelTableRows.getSheetName() + " (id INT NOT NULL, employeenumber INT NOT NULL, firstname VARCHAR(50) NOT NULL, lastname VARCHAR(50) NOT NULL, PRIMARY KEY (id));");
+                System.out.println("Table " + excelTableRows.getSheetName() + " created successfully");
 
                 ResultSet result = null;
 
@@ -34,7 +34,7 @@ public class ExcelTableStorer {
                     Class.forName("org.hsqldb.jdbc.JDBCDriver");
 
                     result = stmt.executeQuery(
-                        "SELECT id, employeenumber, firstname, lastname FROM " + excelFileObjects.getSheetName());
+                        "SELECT id, employeenumber, firstname, lastname FROM " + excelTableRows.getSheetName());
                         System.out.println("je suis  direct apres le set du result");
                     while(result.next()){
                         System.out.println(result.getInt("id")+" | "+

@@ -12,11 +12,13 @@ public class PleaseStoreThisApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PleaseStoreThisApplication.class, args);
         
-        ExcelFileObjects excelFileObjects = new ExcelFileObjects(filePath);
+        ExcelTableRows excelTableRows = new ExcelTableRows(filePath);
 
-        ExcelTableStorer excelTableStorer = new ExcelTableStorer();
+        System.out.println(excelTableRows.getExcelTableRows().toString());
 
-        excelTableStorer.storeExcelTable(excelFileObjects);
+        //ExcelTableStorer excelTableStorer = new ExcelTableStorer();
+
+        //excelTableStorer.storeExcelTable(excelTableRows);
 
 	}
 
