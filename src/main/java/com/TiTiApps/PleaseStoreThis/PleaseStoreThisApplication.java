@@ -23,6 +23,7 @@ public class PleaseStoreThisApplication {
 
     private static String excelFileName = "EmployeeData.xlsx";
     private static String filePath = "src/main/resources/excel_file/" + excelFileName;
+    private static String dbName = "excel-tables-db";
     private static String tableName = "EmployeesInfo";
 
 	public static void main(String[] args) {
@@ -36,6 +37,8 @@ public class PleaseStoreThisApplication {
         System.out.println();
 
         insertRows(rowsToInsert, tableName);
+
+        printTableRows(tableName);
         
     }
 
@@ -45,28 +48,12 @@ public class PleaseStoreThisApplication {
         
         try {
             Class.forName("org.hsqldb.jdbc.JDBCDriver");
-            con = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/excel-tables-db", "SA", "");
+            con = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/" + dbName, "SA", "");
             stmt = con.createStatement();
             
             try {
             
-                stmt.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (id INT IDENTITY NOT NULL, employeenumber INT NOT NULL, firstname VARCHAR(50) NOT NULL, lastname VARCHAR(50) NOT NULL, PRIMARY KEY (id));");
-
-                ResultSet result = null;
-                
-                try {
-                    Class.forName("org.hsqldb.jdbc.JDBCDriver");
-
-                    result = stmt.executeQuery(
-                        "SELECT id, employeenumber, firstname, lastname FROM " + tableName);
-                    while(result.next()){
-                        System.out.println(result.getInt("id")+" | "+
-                        result.getString("title")+" | "+
-                        result.getString("author"));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace(System.out);
-                }
+                stmt.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (id INTEGER IDENTITY PRIMARY KEY, employeenumber VARCHAR(50) NOT NULL, firstname VARCHAR(50) NOT NULL, lastname VARCHAR(50) NOT NULL);");
 
             } catch (Exception e) {
                 e.printStackTrace(System.out);                
@@ -145,12 +132,12 @@ public class PleaseStoreThisApplication {
 
     }
 
-    public static void generateInsertSQLStatement(ArrayList<RowToInsert> rowsToInsert, String tableName) {
-        String insertSQLStatement = "INSERT INTO " + tableName;
+    public static String generateInsertSQLStatement(ArrayList<RowToInsert> rowsToInsert, String tableName) {
+        String insertSQLStatement = "INSERT INTO " + tableName + " VALUES ";
 
         for(RowToInsert row : rowsToInsert) {
             
-            insertSQLStatement += " VALUES (" + row.getEmployeeNumber() + ", " + row.getFirstName() + ", " + row.getLastName() + ", NOW())";
+            insertSQLStatement += "(NULL, '" + row.getEmployeeNumber() + "', '" + row.getFirstName() + "', '" + row.getLastName() + "')";
 
             if (row != rowsToInsert.get(rowsToInsert.size()-1)) {
                 insertSQLStatement += ", ";
@@ -160,13 +147,58 @@ public class PleaseStoreThisApplication {
 
         insertSQLStatement += ";";
 
-        System.out.println(insertSQLStatement);
+        System.out.println("Insert statement : " + insertSQLStatement + "\n");
+
+        return insertSQLStatement;
     }
 
     public static void insertRows(ArrayList<RowToInsert> rowsToInsert, String tableName) {
-        
-        generateInsertSQLStatement(rowsToInsert, tableName);
-        
+
+        Connection con = null; 
+        Statement stmt = null; 
+        int result = 0;
+
+        try {
+
+            Class.forName("org.hsqldb.jdbc.JDBCDriver"); 
+            con = DriverManager.getConnection( "jdbc:hsqldb:hsql://localhost/" + dbName, "SA", ""); 
+            stmt = con.createStatement();
+            result = stmt.executeUpdate(generateInsertSQLStatement(rowsToInsert, tableName));
+            con.commit();
+
+        } catch (Exception e) { 
+            e.printStackTrace(System.out); 
+        }
+
+        System.out.println(result + " rows affected" + "\n");
+
+    }
+
+    public static void printTableRows(String tableName) {
+
+        Connection con = null; 
+        Statement stmt = null;
+        ResultSet result = null;
+
+        try {
+
+            Class.forName("org.hsqldb.jdbc.JDBCDriver"); 
+            con = DriverManager.getConnection( "jdbc:hsqldb:hsql://localhost/" + dbName, "SA", ""); 
+            stmt = con.createStatement();
+            result = stmt.executeQuery("SELECT id, employeenumber, firstname, lastname FROM " + tableName);
+
+            System.out.println("Values from table " + tableName + " :\n");
+
+            while(result.next()){
+                System.out.println(result.getInt("id") + " | " + 
+                result.getString("employeeNumber") + " | " +
+                result.getString("firstName") + " | " +
+                result.getString("lastName"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
     }
 
 }
