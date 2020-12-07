@@ -29,6 +29,7 @@ public class PleaseStoreThisApplication {
 	public static void main(String[] args) {
         
         SpringApplication.run(PleaseStoreThisApplication.class, args);
+        
         createDBTable(tableName);
         
         ArrayList<RowToInsert> rowsToInsert = createRows(filePath);
@@ -132,24 +133,25 @@ public class PleaseStoreThisApplication {
 
     }
 
-    public static String generateInsertSQLStatement(ArrayList<RowToInsert> rowsToInsert, String tableName) {
-        String insertSQLStatement = "INSERT INTO " + tableName + " VALUES ";
+    public static String generateUpdateSQLStatement(ArrayList<RowToInsert> rowsToInsert, String tableName) {
+        
+        String updateSQLStatement = "INSERT INTO " + tableName + " VALUES ";
 
         for(RowToInsert row : rowsToInsert) {
             
-            insertSQLStatement += "(NULL, '" + row.getEmployeeNumber() + "', '" + row.getFirstName() + "', '" + row.getLastName() + "')";
+            updateSQLStatement += "(NULL, '" + row.getEmployeeNumber() + "', '" + row.getFirstName() + "', '" + row.getLastName() + "')";
 
             if (row != rowsToInsert.get(rowsToInsert.size()-1)) {
-                insertSQLStatement += ", ";
+                updateSQLStatement += ", ";
             }
 
         }
 
-        insertSQLStatement += ";";
+        updateSQLStatement += ";";
 
-        System.out.println("Insert statement : " + insertSQLStatement + "\n");
+        System.out.println("Insert statement : " + updateSQLStatement + "\n");
 
-        return insertSQLStatement;
+        return updateSQLStatement;
     }
 
     public static void insertRows(ArrayList<RowToInsert> rowsToInsert, String tableName) {
@@ -163,7 +165,7 @@ public class PleaseStoreThisApplication {
             Class.forName("org.hsqldb.jdbc.JDBCDriver"); 
             con = DriverManager.getConnection( "jdbc:hsqldb:hsql://localhost/" + dbName, "SA", ""); 
             stmt = con.createStatement();
-            result = stmt.executeUpdate(generateInsertSQLStatement(rowsToInsert, tableName));
+            result = stmt.executeUpdate(generateUpdateSQLStatement(rowsToInsert, tableName));
             con.commit();
 
         } catch (Exception e) { 
