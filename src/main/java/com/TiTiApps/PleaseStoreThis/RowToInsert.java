@@ -1,12 +1,12 @@
 package com.TiTiApps.PleaseStoreThis;
 
-public class ExcelTableRow {
+public class RowToInsert {
     
     private String employeeNumber;
     private String firstName;
     private String lastName;
 
-    public ExcelTableRow(){
+    public RowToInsert(){
 
     }
 
