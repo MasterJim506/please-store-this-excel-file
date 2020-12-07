@@ -32,7 +32,7 @@ public class PleaseStoreThisApplication {
         
         createDBTable(tableName);
         
-        ArrayList<RowToInsert> rowsToInsert = createRows(filePath);
+        ArrayList<RowToInsert> rowsToInsert = createRowsToInsert(filePath);
 
         System.out.println("\nRows to insert : " + rowsToInsert.toString());
         System.out.println();
@@ -44,13 +44,12 @@ public class PleaseStoreThisApplication {
     }
 
     public static void createDBTable(String tableName){
-        Connection con = null;
+        
         Statement stmt = null;    
         
         try {
-            Class.forName("org.hsqldb.jdbc.JDBCDriver");
-            con = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/" + dbName, "SA", "");
-            stmt = con.createStatement();
+
+            stmt = getConnectionToDB().createStatement();
             
             try {
             
@@ -65,7 +64,7 @@ public class PleaseStoreThisApplication {
         }
     }
     
-    public static ArrayList<RowToInsert> createRows(String filePath) {
+    public static ArrayList<RowToInsert> createRowsToInsert(String filePath) {
         
         ArrayList<RowToInsert> rowsToInsert = new ArrayList<RowToInsert>();
 
@@ -112,10 +111,8 @@ public class PleaseStoreThisApplication {
                             rowToInsert.setLastName(currentCellValue);
                             break;
                         }    
-                    }
-                    
+                    }                    
                     rowsToInsert.add(rowToInsert);
-
                 }
             }
                             
@@ -130,6 +127,25 @@ public class PleaseStoreThisApplication {
         }
 
         return rowsToInsert;
+    }
+
+    public static void insertRows(ArrayList<RowToInsert> rowsToInsert, String tableName) {
+
+        Statement stmt = null; 
+        int result = 0;
+
+        try {
+
+            Class.forName("org.hsqldb.jdbc.JDBCDriver");
+            stmt = getConnectionToDB().createStatement();
+            result = stmt.executeUpdate(generateUpdateSQLStatement(rowsToInsert, tableName));
+            getConnectionToDB().commit();
+
+        } catch (Exception e) { 
+            e.printStackTrace(System.out); 
+        }
+
+        System.out.println(result + " rows affected" + "\n");
 
     }
 
@@ -154,39 +170,14 @@ public class PleaseStoreThisApplication {
         return updateSQLStatement;
     }
 
-    public static void insertRows(ArrayList<RowToInsert> rowsToInsert, String tableName) {
-
-        Connection con = null; 
-        Statement stmt = null; 
-        int result = 0;
-
-        try {
-
-            Class.forName("org.hsqldb.jdbc.JDBCDriver"); 
-            con = DriverManager.getConnection( "jdbc:hsqldb:hsql://localhost/" + dbName, "SA", ""); 
-            stmt = con.createStatement();
-            result = stmt.executeUpdate(generateUpdateSQLStatement(rowsToInsert, tableName));
-            con.commit();
-
-        } catch (Exception e) { 
-            e.printStackTrace(System.out); 
-        }
-
-        System.out.println(result + " rows affected" + "\n");
-
-    }
-
     public static void printTableRows(String tableName) {
 
-        Connection con = null; 
         Statement stmt = null;
         ResultSet result = null;
 
         try {
 
-            Class.forName("org.hsqldb.jdbc.JDBCDriver"); 
-            con = DriverManager.getConnection( "jdbc:hsqldb:hsql://localhost/" + dbName, "SA", ""); 
-            stmt = con.createStatement();
+            stmt = getConnectionToDB().createStatement();
             result = stmt.executeQuery("SELECT id, employeenumber, firstname, lastname FROM " + tableName);
 
             System.out.println("Values from table " + tableName + " :\n");
@@ -201,6 +192,22 @@ public class PleaseStoreThisApplication {
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
+    }
+
+    public static Connection getConnectionToDB() {
+        
+        Connection con = null;
+        
+        try {
+
+            Class.forName("org.hsqldb.jdbc.JDBCDriver"); 
+            con = DriverManager.getConnection( "jdbc:hsqldb:hsql://localhost/" + dbName, "SA", ""); 
+    
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+
+        return con;
     }
 
 }
