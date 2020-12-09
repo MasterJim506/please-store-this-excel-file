@@ -12,12 +12,12 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelImporter {
+
+    private static HsqldbDatabaseWrapper importerWrapper = new HsqldbDatabaseWrapper();
     
     public static void importExcelFile(String filePath, String tableName) {
         
-        //Create table if it doesn't exist yet
-        HsqldbDatabaseWrapper importerWrapper = new HsqldbDatabaseWrapper();
-        
+        //Create table if it doesn't exist yet        
         importerWrapper.createTable(tableName);
 
         importerWrapper.insertIntoTable(createRowsToInsert(filePath), tableName);
